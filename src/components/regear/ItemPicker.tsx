@@ -206,9 +206,6 @@ export function ItemPicker({ dataset, onAdd }: Props) {
           Mostrando os primeiros {MAX_RESULTS} — refine a busca ou use os filtros.
         </p>
       )}
-      <div className="mt-3 hidden">
-        <Button size="sm">placeholder</Button>
-      </div>
     </section>
   );
 }
