@@ -12,7 +12,7 @@ export function RequirementsPanel({ result }: Props) {
   const hasResources = result.resourceGroups.length > 0;
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
+    <div className={result.artifacts.length > 0 ? "grid gap-4 xl:grid-cols-[1.6fr_1fr]" : "grid gap-4"}>
       <section className="panel p-4">
         <header className="mb-3 flex items-center gap-2">
           <Package className="size-4 text-primary" />
@@ -69,7 +69,7 @@ export function RequirementsPanel({ result }: Props) {
         </div>
       </section>
 
-      <section className="panel h-fit p-4">
+      {result.artifacts.length > 0 && <section className="panel h-fit p-4">
         <header className="mb-3 flex items-center gap-2">
           <Gem className="size-4" style={{ color: "var(--color-artifact)" }} />
           <h2 className="text-sm font-semibold tracking-widest text-muted-foreground uppercase">
@@ -77,11 +77,6 @@ export function RequirementsPanel({ result }: Props) {
           </h2>
         </header>
 
-        {result.artifacts.length === 0 ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">
-            Nenhum artefato necessário.
-          </p>
-        ) : (
           <table className="w-full text-sm">
             <tbody>
               {result.artifacts.map((row) => (
@@ -110,8 +105,7 @@ export function RequirementsPanel({ result }: Props) {
               ))}
             </tbody>
           </table>
-        )}
-      </section>
+      </section>}
     </div>
   );
 }

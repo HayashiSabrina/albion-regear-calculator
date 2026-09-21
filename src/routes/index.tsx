@@ -24,6 +24,7 @@ import { useRegears } from "@/hooks/useRegears";
 import { calculateCraftingRequirements } from "@/lib/albion/crafting";
 import { formatDate, formatNumber } from "@/lib/albion/format";
 import { addLine, removeLine, setLineQuantity } from "@/lib/albion/regears";
+import type { RegearLine } from "@/lib/albion/types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -68,7 +69,7 @@ function Index() {
     setEditingName(false);
   };
 
-  const updateLines = (lines: typeof active.lines) => {
+  const updateLines = (lines: RegearLine[]) => {
     if (active) void update({ ...active, lines });
   };
 
