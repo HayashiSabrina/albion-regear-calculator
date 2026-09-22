@@ -3,12 +3,14 @@ import { Gem, Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatNumber, itemIconUrl } from "@/lib/albion/format";
 import type { CraftingResult } from "@/lib/albion/crafting";
+import { formatSilver, type MarketPrice } from "@/lib/albion/market";
 
 interface Props {
   result: CraftingResult;
+  prices: Map<string, MarketPrice>;
 }
 
-export function RequirementsPanel({ result }: Props) {
+export function RequirementsPanel({ result, prices }: Props) {
   const hasResources = result.resourceGroups.length > 0;
 
   return (
@@ -36,9 +38,13 @@ export function RequirementsPanel({ result }: Props) {
             <div key={group.group}>
               <div className="mb-1 flex items-baseline justify-between border-b border-border pb-1">
                 <h3 className="text-sm font-semibold text-foreground">{group.group}</h3>
-                <span className="num text-xs text-muted-foreground">
-                  {formatNumber(group.total)}
-                </span>
+                <div className="num flex gap-3 text-xs text-muted-foreground">
+                  <span>{formatNumber(group.total)} un.</span>
+                  <span className="text-primary">
+                    Venda {formatSilver(group.rows.reduce((sum, row) => sum + (prices.get(row.id)?.sellPriceMin ?? 0) * row.quantity, 0))}
+                  </span>
+                  <span>Compra {formatSilver(group.rows.reduce((sum, row) => sum + (prices.get(row.id)?.buyPriceMax ?? 0) * row.quantity, 0))}</span>
+                </div>
               </div>
               <table className="w-full text-sm">
                 <tbody>
@@ -63,6 +69,10 @@ export function RequirementsPanel({ result }: Props) {
                       </td>
                       <td className="num w-28 py-1.5 text-right font-semibold text-primary">
                         {formatNumber(row.quantity)}
+                      </td>
+                      <td className="num w-36 py-1.5 text-right text-xs">
+                        <span className="text-primary">{formatSilver(prices.get(row.id)?.sellPriceMin)}</span>
+                        <span className="block text-muted-foreground">{formatSilver(prices.get(row.id)?.buyPriceMax)}</span>
                       </td>
                     </tr>
                   ))}
@@ -105,6 +115,10 @@ export function RequirementsPanel({ result }: Props) {
                   </td>
                   <td className="num w-20 py-1.5 text-right font-semibold">
                     {formatNumber(row.quantity)}
+                  </td>
+                  <td className="num w-32 py-1.5 text-right text-xs">
+                    <span className="text-primary">{formatSilver(prices.get(row.id)?.sellPriceMin)}</span>
+                    <span className="block text-muted-foreground">{formatSilver(prices.get(row.id)?.buyPriceMax)}</span>
                   </td>
                 </tr>
               ))}

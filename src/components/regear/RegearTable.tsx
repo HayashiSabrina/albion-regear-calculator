@@ -4,16 +4,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { itemIconUrl, itemTierLabel } from "@/lib/albion/format";
+import { formatSilver, isStaleMarketDate, type MarketPrice } from "@/lib/albion/market";
 import type { EquipmentItem, RegearLine } from "@/lib/albion/types";
 
 interface Props {
   lines: RegearLine[];
   itemIndex: Map<string, EquipmentItem>;
+  prices: Map<string, MarketPrice>;
   onQuantityChange: (itemId: string, quantity: number) => void;
   onRemove: (itemId: string) => void;
 }
 
-export function RegearTable({ lines, itemIndex, onQuantityChange, onRemove }: Props) {
+export function RegearTable({ lines, itemIndex, prices, onQuantityChange, onRemove }: Props) {
   return (
     <section className="panel overflow-hidden">
       <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
@@ -36,18 +38,21 @@ export function RegearTable({ lines, itemIndex, onQuantityChange, onRemove }: Pr
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[620px] text-sm">
+          <table className="w-full min-w-[900px] text-sm">
             <thead className="bg-muted/40 text-left text-[11px] tracking-widest text-muted-foreground uppercase">
               <tr>
                 <th className="px-4 py-2 font-semibold">Equipamento</th>
                 <th className="w-28 px-3 py-2 font-semibold">Tier</th>
                 <th className="w-28 px-3 py-2 font-semibold">Quantidade</th>
+                <th className="w-36 px-3 py-2 text-right font-semibold">Menor venda</th>
+                <th className="w-36 px-3 py-2 text-right font-semibold">Maior compra</th>
                 <th className="w-16 px-4 py-2 text-right font-semibold">Remover</th>
               </tr>
             </thead>
             <tbody>
               {lines.map((line) => {
                 const item = itemIndex.get(line.itemId);
+                const price = prices.get(line.itemId);
                 return (
                   <tr key={line.itemId} className="border-t border-border/60">
                     <td className="px-4 py-2.5">
@@ -82,6 +87,24 @@ export function RegearTable({ lines, itemIndex, onQuantityChange, onRemove }: Pr
                         }
                         className="num w-20"
                       />
+                    </td>
+                    <td className="num px-3 py-2.5 text-right">
+                      <p className="font-semibold text-primary">{formatSilver(price?.sellPriceMin)}</p>
+                      {price?.sellPriceMin && (
+                        <p className="text-[10px] text-muted-foreground">
+                          Total {formatSilver(price.sellPriceMin * line.quantity)}
+                          {isStaleMarketDate(price.sellPriceMinDate) ? " · antiga" : ""}
+                        </p>
+                      )}
+                    </td>
+                    <td className="num px-3 py-2.5 text-right">
+                      <p className="font-semibold">{formatSilver(price?.buyPriceMax)}</p>
+                      {price?.buyPriceMax && (
+                        <p className="text-[10px] text-muted-foreground">
+                          Total {formatSilver(price.buyPriceMax * line.quantity)}
+                          {isStaleMarketDate(price.buyPriceMaxDate) ? " · antiga" : ""}
+                        </p>
+                      )}
                     </td>
                     <td className="px-4 py-2.5 text-right">
                       <Button
