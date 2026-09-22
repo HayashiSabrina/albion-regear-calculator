@@ -76,6 +76,18 @@ export function RegearTable({ lines, itemIndex, prices, onQuantityChange, onRemo
                         {item ? itemTierLabel(item) : "—"}
                       </Badge>
                     </td>
+                    <td className="px-3 py-2.5">
+                      <Input
+                        type="number"
+                        min={1}
+                        value={line.quantity}
+                        aria-label={`Quantidade de ${item?.name ?? line.itemId}`}
+                        onChange={(event) =>
+                          onQuantityChange(line.itemId, Math.max(1, Number(event.target.value) || 1))
+                        }
+                        className="num w-20"
+                      />
+                    </td>
                     <td className="num px-3 py-2.5 text-right">
                       <p className="font-semibold text-primary">{formatSilver(price?.sellPriceMin)}</p>
                       {price?.sellPriceMin && (
@@ -93,18 +105,6 @@ export function RegearTable({ lines, itemIndex, prices, onQuantityChange, onRemo
                           {isStaleMarketDate(price.buyPriceMaxDate) ? " · antiga" : ""}
                         </p>
                       )}
-                    </td>
-                    <td className="px-3 py-2.5">
-                      <Input
-                        type="number"
-                        min={1}
-                        value={line.quantity}
-                        aria-label={`Quantidade de ${item?.name ?? line.itemId}`}
-                        onChange={(event) =>
-                          onQuantityChange(line.itemId, Math.max(1, Number(event.target.value) || 1))
-                        }
-                        className="num w-20"
-                      />
                     </td>
                     <td className="px-4 py-2.5 text-right">
                       <Button
