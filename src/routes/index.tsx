@@ -3,6 +3,7 @@ import { Copy, Database, Pencil, Save, Star, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { ItemPicker } from "@/components/regear/ItemPicker";
+import { MarketPanel } from "@/components/regear/MarketPanel";
 import { RegearSidebar } from "@/components/regear/RegearSidebar";
 import { RegearTable } from "@/components/regear/RegearTable";
 import { RequirementsPanel } from "@/components/regear/RequirementsPanel";
@@ -20,9 +21,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAlbionData } from "@/hooks/useAlbionData";
+import { useMarketPrices } from "@/hooks/useMarketPrices";
 import { useRegears } from "@/hooks/useRegears";
 import { calculateCraftingRequirements } from "@/lib/albion/crafting";
 import { formatDate, formatNumber } from "@/lib/albion/format";
+import {
+  newestMarketDate,
+  type MarketLocation,
+  type MarketServer,
+} from "@/lib/albion/market";
 import { addLine, removeLine, setLineQuantity } from "@/lib/albion/regears";
 import type { RegearLine } from "@/lib/albion/types";
 
@@ -52,16 +59,60 @@ function Index() {
     useRegears();
   const [editingName, setEditingName] = useState(false);
   const [name, setName] = useState("");
+  const [marketServer, setMarketServer] = useState<MarketServer>("west");
+  const [marketLocation, setMarketLocation] = useState<MarketLocation>("Caerleon");
 
   useEffect(() => {
     setName(active?.name ?? "");
     setEditingName(false);
   }, [active?.id, active?.name]);
 
+  useEffect(() => {
+    const savedServer = window.localStorage.getItem("albion-market-server") as MarketServer | null;
+    const savedLocation = window.localStorage.getItem("albion-market-location") as MarketLocation | null;
+    if (savedServer) setMarketServer(savedServer);
+    if (savedLocation) setMarketLocation(savedLocation);
+  }, []);
+
   const result = useMemo(
     () => calculateCraftingRequirements(active?.lines ?? [], dataset, itemIndex),
     [active?.lines, dataset, itemIndex],
   );
+  const marketItemIds = useMemo(
+    () => [
+      ...(active?.lines.map((line) => line.itemId) ?? []),
+      ...result.resourceGroups.flatMap((group) => group.rows.map((row) => row.id)),
+      ...result.artifacts.map((row) => row.id),
+    ],
+    [active?.lines, result],
+  );
+  const marketQuery = useMarketPrices(marketItemIds, marketServer, marketLocation);
+  const marketPrices = useMemo(
+    () => new Map((marketQuery.data ?? []).map((price) => [price.itemId, price])),
+    [marketQuery.data],
+  );
+  const marketTotals = useMemo(() => {
+    const rows = result.resourceGroups.flatMap((group) => group.rows).concat(result.artifacts);
+    return rows.reduce(
+      (totals, row) => {
+        const price = marketPrices.get(row.id);
+        totals.buy += (price?.sellPriceMin ?? 0) * row.quantity;
+        totals.sell += (price?.buyPriceMax ?? 0) * row.quantity;
+        return totals;
+      },
+      { buy: 0, sell: 0 },
+    );
+  }, [marketPrices, result]);
+
+  const changeServer = (value: MarketServer) => {
+    setMarketServer(value);
+    window.localStorage.setItem("albion-market-server", value);
+  };
+
+  const changeLocation = (value: MarketLocation) => {
+    setMarketLocation(value);
+    window.localStorage.setItem("albion-market-location", value);
+  };
 
   const saveName = () => {
     if (!active) return;
@@ -190,9 +241,22 @@ function Index() {
             </section>
           ) : (
             <>
+              <MarketPanel
+                server={marketServer}
+                location={marketLocation}
+                onServerChange={changeServer}
+                onLocationChange={changeLocation}
+                buyTotal={marketTotals.buy}
+                sellTotal={marketTotals.sell}
+                updatedAt={newestMarketDate(marketQuery.data ?? [])}
+                loading={marketQuery.isFetching}
+                error={marketQuery.isError}
+                onRefresh={() => void marketQuery.refetch()}
+              />
               <RegearTable
                 lines={active.lines}
                 itemIndex={itemIndex}
+                prices={marketPrices}
                 onQuantityChange={(itemId, quantity) =>
                   updateLines(setLineQuantity(active.lines, itemId, quantity))
                 }
@@ -202,7 +266,7 @@ function Index() {
                 dataset={dataset}
                 onAdd={(itemId, quantity) => updateLines(addLine(active.lines, itemId, quantity))}
               />
-              <RequirementsPanel result={result} />
+              <RequirementsPanel result={result} prices={marketPrices} />
               {result.unknownItemIds.length > 0 && (
                 <p className="text-xs text-destructive">
                   {result.unknownItemIds.length} item(ns) não foram encontrados na base atual.
