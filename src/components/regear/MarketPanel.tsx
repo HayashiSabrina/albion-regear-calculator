@@ -76,9 +76,15 @@ export function MarketPanel({
 
       <div className="mt-3 grid gap-2 border-t border-border pt-3 sm:grid-cols-3">
         <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
-          <p className="text-[11px] text-muted-foreground">Craftar (recursos + artefatos)</p>
+          <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <TrendingDown className="size-3 text-primary" /> Craftar (recursos + artefatos)
+          </p>
           <p className="num mt-1 font-semibold text-primary">{formatSilver(buyTotal)}</p>
+          <p className="num mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground">
+            <TrendingUp className="size-3" /> Revendendo materiais: {formatSilver(sellTotal)}
+          </p>
         </div>
+
         <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
           <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
             <ShoppingCart className="size-3" /> Comprar equipamentos prontos
