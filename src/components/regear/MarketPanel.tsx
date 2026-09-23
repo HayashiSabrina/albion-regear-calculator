@@ -47,7 +47,7 @@ export function MarketPanel({
 }: Props) {
   return (
     <section className="panel p-4">
-      <div className="grid gap-3 lg:grid-cols-[180px_200px_minmax(0,1fr)_auto] lg:items-end">
+      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end">
         <label className="space-y-1 text-xs text-muted-foreground">
           Servidor
           <Select value={server} onValueChange={(value) => onServerChange(value as MarketServer)}>
