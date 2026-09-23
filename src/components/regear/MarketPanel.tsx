@@ -38,6 +38,8 @@ export function MarketPanel({
   onLocationChange,
   buyTotal,
   sellTotal,
+  gearTotal,
+
   updatedAt,
   loading,
   error,
@@ -80,6 +82,36 @@ export function MarketPanel({
           <RefreshCw className={loading ? "animate-spin" : ""} />
         </Button>
       </div>
+
+      <div className="mt-3 grid gap-2 border-t border-border pt-3 sm:grid-cols-3">
+        <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
+          <p className="text-[11px] text-muted-foreground">Craftar (recursos + artefatos)</p>
+          <p className="num mt-1 font-semibold text-primary">{formatSilver(buyTotal)}</p>
+        </div>
+        <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
+          <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <ShoppingCart className="size-3" /> Comprar equipamentos prontos
+          </p>
+          <p className="num mt-1 font-semibold">{formatSilver(gearTotal)}</p>
+        </div>
+        <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
+          <p className="text-[11px] text-muted-foreground">Diferença</p>
+          {gearTotal > 0 && buyTotal > 0 ? (
+            <p
+              className={`num mt-1 font-semibold ${buyTotal < gearTotal ? "text-primary" : "text-destructive"}`}
+            >
+              {buyTotal < gearTotal ? "Craftar economiza " : "Comprar economiza "}
+              {formatSilver(Math.abs(gearTotal - buyTotal))}
+              <span className="ml-1 text-[11px] font-normal text-muted-foreground">
+                ({Math.round((Math.abs(gearTotal - buyTotal) / Math.max(gearTotal, buyTotal)) * 100)}%)
+              </span>
+            </p>
+          ) : (
+            <p className="mt-1 text-xs text-muted-foreground">Sem cotações suficientes para comparar.</p>
+          )}
+        </div>
+      </div>
+
       <p className="mt-2 flex items-center gap-1 text-[11px] text-muted-foreground">
         <Clock3 className="size-3" />
         {error
