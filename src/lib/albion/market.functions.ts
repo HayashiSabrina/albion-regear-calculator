@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { MARKET_LOCATIONS, MARKET_SERVERS, type MarketPrice } from "./market";
+import { MARKET_LOCATIONS, MARKET_SERVERS, toMarketItemId, type MarketPrice } from "./market";
 
 const inputSchema = z.object({
   server: z.enum(MARKET_SERVERS.map((server) => server.value) as ["west", "europe", "east"]),

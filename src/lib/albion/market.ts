@@ -27,8 +27,19 @@ export interface MarketPrice {
   buyPriceMaxDate: string | null;
 }
 
+/**
+ * Recursos refinados encantados vêm do dump como `T4_CLOTH_LEVEL1`, mas o
+ * Albion Online Data Project os indexa como `T4_CLOTH_LEVEL1@1`.
+ */
+export function toMarketItemId(itemId: string) {
+  if (itemId.includes("@")) return itemId;
+  const match = /_LEVEL([1-4])$/.exec(itemId);
+  return match ? `${itemId}@${match[1]}` : itemId;
+}
+
 export const formatSilver = (value: number | null | undefined) =>
   value == null ? "—" : `${Math.round(value).toLocaleString("pt-BR")} 🜲`;
+
 
 export function newestMarketDate(prices: MarketPrice[]) {
   const dates = prices.flatMap((price) =>
