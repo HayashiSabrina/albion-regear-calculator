@@ -68,7 +68,6 @@ export function MarketPanel({
             </SelectContent>
           </Select>
         </label>
-        <div className="hidden" aria-hidden="true" />
 
         <Button variant="outline" size="icon" onClick={onRefresh} disabled={loading} aria-label="Atualizar preços">
           <RefreshCw className={loading ? "animate-spin" : ""} />
