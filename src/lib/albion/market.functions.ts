@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { MARKET_LOCATIONS, MARKET_SERVERS, type MarketPrice } from "./market";
+import { MARKET_LOCATIONS, MARKET_SERVERS, toMarketItemId, type MarketPrice } from "./market";
 
 const inputSchema = z.object({
   server: z.enum(MARKET_SERVERS.map((server) => server.value) as ["west", "europe", "east"]),
@@ -26,8 +26,14 @@ export const getMarketPrices = createServerFn({ method: "POST" })
     const ids = [...new Set(data.itemIds)];
     if (ids.length === 0) return [];
 
+    // IDs da API (recursos encantados usam sufixo @n) -> IDs do dataset.
+    const idByMarketId = new Map<string, string>();
+    for (const id of ids) idByMarketId.set(toMarketItemId(id), id);
+    const marketIds = [...idByMarketId.keys()];
+
     const chunks: string[][] = [];
-    for (let index = 0; index < ids.length; index += 80) chunks.push(ids.slice(index, index + 80));
+    for (let index = 0; index < marketIds.length; index += 80)
+      chunks.push(marketIds.slice(index, index + 80));
 
     const responses = await Promise.all(
       chunks.map(async (chunk) => {
@@ -36,7 +42,6 @@ export const getMarketPrices = createServerFn({ method: "POST" })
           `https://${data.server}.albion-online-data.com`,
         );
         url.searchParams.set("locations", data.location);
-        url.searchParams.set("qualities", "1");
         const response = await fetch(url, { headers: { Accept: "application/json" } });
         if (!response.ok) {
           const body = await response.text();
@@ -46,12 +51,31 @@ export const getMarketPrices = createServerFn({ method: "POST" })
       }),
     );
 
-    return responses.flat().map((price) => ({
-      itemId: price.item_id,
-      city: price.city,
-      sellPriceMin: price.sell_price_min > 0 ? price.sell_price_min : null,
-      sellPriceMinDate: validDate(price.sell_price_min_date),
-      buyPriceMax: price.buy_price_max > 0 ? price.buy_price_max : null,
-      buyPriceMaxDate: validDate(price.buy_price_max_date),
-    }));
+    // Consolida todas as qualidades: menor venda e maior compra por item.
+    const merged = new Map<string, MarketPrice>();
+    for (const price of responses.flat()) {
+      const itemId = idByMarketId.get(price.item_id) ?? price.item_id;
+      const current =
+        merged.get(itemId) ??
+        ({
+          itemId,
+          city: price.city,
+          sellPriceMin: null,
+          sellPriceMinDate: null,
+          buyPriceMax: null,
+          buyPriceMaxDate: null,
+        } satisfies MarketPrice);
+
+      if (price.sell_price_min > 0 && (current.sellPriceMin == null || price.sell_price_min < current.sellPriceMin)) {
+        current.sellPriceMin = price.sell_price_min;
+        current.sellPriceMinDate = validDate(price.sell_price_min_date);
+      }
+      if (price.buy_price_max > 0 && (current.buyPriceMax == null || price.buy_price_max > current.buyPriceMax)) {
+        current.buyPriceMax = price.buy_price_max;
+        current.buyPriceMaxDate = validDate(price.buy_price_max_date);
+      }
+      merged.set(itemId, current);
+    }
+
+    return [...merged.values()];
   });
