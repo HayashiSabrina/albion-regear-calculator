@@ -68,16 +68,8 @@ export function MarketPanel({
             </SelectContent>
           </Select>
         </label>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
-            <p className="flex items-center gap-1 text-[11px] text-muted-foreground"><TrendingDown className="size-3 text-primary" /> Menor venda</p>
-            <p className="num mt-1 font-semibold text-primary">{formatSilver(buyTotal)}</p>
-          </div>
-          <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
-            <p className="flex items-center gap-1 text-[11px] text-muted-foreground"><TrendingUp className="size-3" /> Maior compra</p>
-            <p className="num mt-1 font-semibold">{formatSilver(sellTotal)}</p>
-          </div>
-        </div>
+        <div className="hidden" aria-hidden="true" />
+
         <Button variant="outline" size="icon" onClick={onRefresh} disabled={loading} aria-label="Atualizar preços">
           <RefreshCw className={loading ? "animate-spin" : ""} />
         </Button>
