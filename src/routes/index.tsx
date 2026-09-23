@@ -93,16 +93,22 @@ function Index() {
   );
   const marketTotals = useMemo(() => {
     const rows = result.resourceGroups.flatMap((group) => group.rows).concat(result.artifacts);
-    return rows.reduce(
-      (totals, row) => {
+    const totals = rows.reduce(
+      (acc, row) => {
         const price = marketPrices.get(row.id);
-        totals.buy += (price?.sellPriceMin ?? 0) * row.quantity;
-        totals.sell += (price?.buyPriceMax ?? 0) * row.quantity;
-        return totals;
+        acc.buy += (price?.sellPriceMin ?? 0) * row.quantity;
+        acc.sell += (price?.buyPriceMax ?? 0) * row.quantity;
+        return acc;
       },
-      { buy: 0, sell: 0 },
+      { buy: 0, sell: 0, gear: 0 },
     );
-  }, [marketPrices, result]);
+    for (const line of active?.lines ?? []) {
+      const price = marketPrices.get(line.itemId);
+      totals.gear += (price?.sellPriceMin ?? 0) * line.quantity;
+    }
+    return totals;
+  }, [active?.lines, marketPrices, result]);
+
 
   const changeServer = (value: MarketServer) => {
     setMarketServer(value);
