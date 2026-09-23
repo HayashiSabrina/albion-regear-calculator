@@ -254,6 +254,8 @@ function Index() {
                 onLocationChange={changeLocation}
                 buyTotal={marketTotals.buy}
                 sellTotal={marketTotals.sell}
+                gearTotal={marketTotals.gear}
+
                 updatedAt={newestMarketDate(marketQuery.data ?? [])}
                 loading={marketQuery.isFetching}
                 error={marketQuery.isError}

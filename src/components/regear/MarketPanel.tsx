@@ -1,4 +1,4 @@
-import { Clock3, RefreshCw, TrendingDown, TrendingUp } from "lucide-react";
+import { Clock3, RefreshCw, ShoppingCart, TrendingDown, TrendingUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,11 +23,13 @@ interface Props {
   onLocationChange: (value: MarketLocation) => void;
   buyTotal: number;
   sellTotal: number;
+  gearTotal: number;
   updatedAt: string | null;
   loading: boolean;
   error: boolean;
   onRefresh: () => void;
 }
+
 
 export function MarketPanel({
   server,
