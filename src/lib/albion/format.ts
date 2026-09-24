@@ -9,7 +9,15 @@ export const CATEGORY_LABELS: Record<EquipmentCategory, string> = {
   weapon: "Armas",
   armor: "Armaduras",
   offhand: "Off-hands",
+  cape: "Capas",
+  bag: "Bolsas",
+  mount: "Montarias",
+  food: "Comidas",
+  potion: "Poções",
 };
+
+/** Categorias da calculadora de regear (sem consumíveis/acessórios). */
+export const REGEAR_CATEGORIES: EquipmentCategory[] = ["weapon", "armor", "offhand"];
 
 export const SLOT_LABELS: Record<string, string> = {
   mainhand: "Arma",
@@ -17,6 +25,11 @@ export const SLOT_LABELS: Record<string, string> = {
   chest: "Peito",
   shoes: "Botas",
   offhand: "Off-hand",
+  cape: "Capa",
+  bag: "Bolsa",
+  mount: "Montaria",
+  food: "Comida",
+  potion: "Poção",
 };
 
 const WORD = /(^|[\s_])([a-z])/g;

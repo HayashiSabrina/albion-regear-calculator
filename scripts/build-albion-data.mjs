@@ -35,7 +35,7 @@
 import { writeFile, mkdir } from "node:fs/promises";
 
 const BASE = "https://raw.githubusercontent.com/ao-data/ao-bin-dumps/master";
-const OUT = "public/data/albion-items.v1.json";
+const OUT = "public/data/albion-items.v2.json";
 
 const asArray = (v) => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
@@ -43,6 +43,9 @@ const asArray = (v) => (v == null ? [] : Array.isArray(v) ? v : [v]);
 // ferramentas de coleta, vanity e decoração ficam de fora.
 const ARMOR_SLOTS = { head: "head", armor: "chest", shoes: "shoes" };
 const ALLOWED_SHOP_CATEGORIES = new Set(["weapons", "head", "armors", "shoes", "offhands"]);
+
+// Categorias extras usadas apenas na tela Party Builds.
+const PARTY_ONLY = new Set(["cape", "bag", "mount", "food", "potion"]);
 
 const REFINED_GROUPS = {
   CLOTH: "Cloth",
@@ -110,7 +113,9 @@ const main = async () => {
 
   const push = (node, id, tier, enchant, category, family, slot, recipe) => {
     const { resources, artifacts } = splitResources(recipe);
-    if (resources.length === 0 && artifacts.length === 0) return;
+    // Equipamentos de regear exigem receita; itens de Party Builds
+    // (capa, bolsa, montaria, comida, poção) entram mesmo sem receita.
+    if (resources.length === 0 && artifacts.length === 0 && !PARTY_ONLY.has(category)) return;
     for (const [rid] of resources) resourceIds.add(rid);
     for (const [aid] of artifacts) resourceIds.add(aid);
     items.push({
@@ -149,14 +154,30 @@ const main = async () => {
 
   for (const e of asArray(raw.items.equipmentitem)) {
     const shop = e["@shopcategory"];
-    if (!ALLOWED_SHOP_CATEGORIES.has(shop)) continue;
     const slotType = e["@slottype"];
+    if ((shop === "capes" && slotType === "cape") || (shop === "bags" && slotType === "bag")) {
+      collect(e, slotType, e["@shopsubcategory1"] ?? slotType, slotType);
+      continue;
+    }
+    if (!ALLOWED_SHOP_CATEGORIES.has(shop)) continue;
     if (slotType === "offhand") {
       collect(e, "offhand", e["@shopsubcategory1"] ?? "offhand", "offhand");
     } else if (ARMOR_SLOTS[slotType]) {
       const family = e["@shopsubcategory1"] ?? "other"; // cloth / leather / plate
       collect(e, "armor", family, ARMOR_SLOTS[slotType]);
     }
+  }
+
+  for (const m of asArray(raw.items.mount)) {
+    if (m["@shopcategory"] !== "mounts") continue;
+    collect(m, "mount", m["@shopsubcategory1"] ?? "mounts", "mount");
+  }
+
+  for (const c of asArray(raw.items.consumableitem)) {
+    if (c["@shopcategory"] !== "consumables") continue;
+    const sub = c["@shopsubcategory1"];
+    if (sub === "food") collect(c, "food", "food", "food");
+    else if (sub === "potions") collect(c, "potion", "potions", "potion");
   }
 
   const resources = {};
@@ -185,7 +206,7 @@ const main = async () => {
   );
 
   const payload = {
-    version: 1,
+    version: 2,
     generatedAt: new Date().toISOString(),
     source: "https://github.com/ao-data/ao-bin-dumps (items.json + formatted/items.json)",
     items,

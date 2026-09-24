@@ -2,9 +2,10 @@
 // Banco: albion-regear. Stores: regears (key: id), meta (cache do dataset).
 
 const DB_NAME = "albion-regear";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 export const STORE_REGEARS = "regears";
 export const STORE_META = "meta";
+export const STORE_PARTIES = "parties";
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -19,6 +20,9 @@ function openDb(): Promise<IDBDatabase> {
         const db = request.result;
         if (!db.objectStoreNames.contains(STORE_REGEARS)) {
           db.createObjectStore(STORE_REGEARS, { keyPath: "id" });
+        }
+        if (!db.objectStoreNames.contains(STORE_PARTIES)) {
+          db.createObjectStore(STORE_PARTIES, { keyPath: "id" });
         }
         if (!db.objectStoreNames.contains(STORE_META)) {
           db.createObjectStore(STORE_META);

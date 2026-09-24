@@ -12,8 +12,8 @@
 import { STORE_META, idbGet, idbPut } from "./idb";
 import type { AlbionDataset } from "./types";
 
-export const DATASET_URL = "/data/albion-items.v1.json";
-const CACHE_KEY = "dataset:v1";
+export const DATASET_URL = "/data/albion-items.v2.json";
+const CACHE_KEY = "dataset:v2";
 
 export interface DatasetState {
   dataset: AlbionDataset;

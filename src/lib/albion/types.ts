@@ -3,7 +3,15 @@
 
 export type ResourceEntry = [resourceId: string, count: number];
 
-export type EquipmentCategory = "weapon" | "armor" | "offhand";
+export type EquipmentCategory =
+  | "weapon"
+  | "armor"
+  | "offhand"
+  | "cape"
+  | "bag"
+  | "mount"
+  | "food"
+  | "potion";
 
 export interface EquipmentItem {
   /** Item ID oficial do Albion (ex.: T8_2H_HOLYSTAFF_HELL@1). Identificador principal. */

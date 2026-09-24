@@ -13,12 +13,13 @@ import {
 } from "@/components/ui/select";
 import {
   CATEGORY_LABELS,
+  REGEAR_CATEGORIES,
   SLOT_LABELS,
   familyLabel,
   itemIconUrl,
   itemTierLabel,
 } from "@/lib/albion/format";
-import type { AlbionDataset, EquipmentCategory, EquipmentItem } from "@/lib/albion/types";
+import type { AlbionDataset, EquipmentItem } from "@/lib/albion/types";
 
 const MAX_RESULTS = 120;
 const ALL = "all";
@@ -36,7 +37,10 @@ export function ItemPicker({ dataset, onAdd }: Props) {
   const [enchant, setEnchant] = useState<string>(ALL);
   const [quantity, setQuantity] = useState(1);
 
-  const items = dataset?.items ?? [];
+  const items = useMemo(
+    () => (dataset?.items ?? []).filter((item) => REGEAR_CATEGORIES.includes(item.category)),
+    [dataset],
+  );
 
   const families = useMemo(() => {
     const set = new Set<string>();
@@ -115,7 +119,7 @@ export function ItemPicker({ dataset, onAdd }: Props) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL}>Todas as categorias</SelectItem>
-            {(Object.keys(CATEGORY_LABELS) as EquipmentCategory[]).map((key) => (
+            {REGEAR_CATEGORIES.map((key) => (
               <SelectItem key={key} value={key}>
                 {CATEGORY_LABELS[key]}
               </SelectItem>
