@@ -19,7 +19,7 @@ import {
   itemIconUrl,
   itemTierLabel,
 } from "@/lib/albion/format";
-import type { AlbionDataset, EquipmentCategory, EquipmentItem } from "@/lib/albion/types";
+import type { AlbionDataset, EquipmentItem } from "@/lib/albion/types";
 
 const MAX_RESULTS = 120;
 const ALL = "all";
