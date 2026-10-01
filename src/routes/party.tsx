@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAlbionData } from "@/hooks/useAlbionData";
 import { useMarketPrices } from "@/hooks/useMarketPrices";
 import { useParties } from "@/hooks/useParties";
@@ -96,6 +97,7 @@ function PartyPage() {
   };
 
   return (
+    <TooltipProvider delayDuration={200}>
     <main className="min-h-screen bg-background">
       <div className="mx-auto grid max-w-[1680px] gap-4 p-3 sm:p-4 lg:grid-cols-[280px_minmax(0,1fr)]">
         <aside className="panel flex h-fit flex-col gap-4 p-4 lg:sticky lg:top-4">
@@ -292,5 +294,6 @@ function PartyPage() {
         }}
       />
     </main>
+    </TooltipProvider>
   );
 }
