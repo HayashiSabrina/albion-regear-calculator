@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AppNav } from "@/components/AppNav";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/albion/format";
 import type { Regear } from "@/lib/albion/types";
@@ -41,6 +42,8 @@ export function RegearSidebar({
           <p className="text-[11px] text-muted-foreground">Albion Online</p>
         </div>
       </div>
+
+      <AppNav />
 
       <div>
         <p className="mb-2 text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
