@@ -10,9 +10,9 @@ const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 
 interface Props {
   slot: GearSlot;
-  entry?: BuildItem;
-  item?: EquipmentItem;
-  blocked?: boolean;
+  entry?: BuildItem | undefined;
+  item?: EquipmentItem | undefined;
+  blocked?: boolean | undefined;
   onPick: () => void;
   onClear: () => void;
   onQuantity: (value: number) => void;
