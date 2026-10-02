@@ -8,3 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Project architecture
+
+- Keep Party Build image export on `/party/print`, reading the selected composition from IndexedDB so the editor stays separate from the capture canvas.
