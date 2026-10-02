@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PartyRouteImport } from './routes/party'
+import { Route as PartyPrintRouteImport } from './routes/party.print'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,39 @@ const PartyRoute = PartyRouteImport.update({
   path: '/party',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PartyPrintRoute = PartyPrintRouteImport.update({
+  id: '/print',
+  path: '/print',
+  getParentRoute: () => PartyRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/party': typeof PartyRoute
+  '/party': typeof PartyRouteWithChildren
+  '/party/print': typeof PartyPrintRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/party': typeof PartyRoute
+  '/party': typeof PartyRouteWithChildren
+  '/party/print': typeof PartyPrintRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/party': typeof PartyRoute
+  '/party': typeof PartyRouteWithChildren
+  '/party/print': typeof PartyPrintRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/party'
+  fullPaths: '/' | '/party' | '/party/print'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/party'
-  id: '__root__' | '/' | '/party'
+  to: '/' | '/party' | '/party/print'
+  id: '__root__' | '/' | '/party' | '/party/print'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  PartyRoute: typeof PartyRoute
+  PartyRoute: typeof PartyRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +74,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PartyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/party/print': {
+      id: '/party/print'
+      path: '/print'
+      fullPath: '/party/print'
+      preLoaderRoute: typeof PartyPrintRouteImport
+      parentRoute: typeof PartyRoute
+    }
   }
 }
 
+interface PartyRouteChildren {
+  PartyPrintRoute: typeof PartyPrintRoute
+}
+
+const PartyRouteChildren: PartyRouteChildren = {
+  PartyPrintRoute: PartyPrintRoute,
+}
+
+const PartyRouteWithChildren = PartyRoute._addFileChildren(PartyRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  PartyRoute: PartyRoute,
+  PartyRoute: PartyRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
