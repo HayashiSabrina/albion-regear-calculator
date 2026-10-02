@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Copy, Pencil, Plus, Save, Trash2, Users } from "lucide-react";
+import { Copy, Pencil, Plus, Printer, Save, Trash2, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { AppNav } from "@/components/AppNav";
 import { MemberCard } from "@/components/party/MemberCard";
+import { PartyPrintSheet } from "@/components/party/PartyPrintSheet";
 import { RegearSummary } from "@/components/party/RegearSummary";
 import { SlotItemPicker } from "@/components/party/SlotItemPicker";
 import {
@@ -188,6 +189,9 @@ function PartyPage() {
                     <Button variant="outline" size="sm" onClick={() => void duplicate(active)}>
                       <Copy /> Duplicar
                     </Button>
+                    <Button variant="outline" size="sm" onClick={() => window.print()}>
+                      <Printer /> Imprimir
+                    </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="destructive" size="sm">
@@ -293,6 +297,7 @@ function PartyPage() {
           setPicking(null);
         }}
       />
+      {active && <PartyPrintSheet party={active} itemIndex={itemIndex} />}
     </main>
     </TooltipProvider>
   );
