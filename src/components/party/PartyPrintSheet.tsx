@@ -12,17 +12,18 @@ const GRID: (GearSlot | null)[] = [
 interface Props {
   party: Party;
   itemIndex: Map<string, EquipmentItem>;
+  captureId?: string;
 }
 
 /**
- * Folha de impressão: renderizada escondida na tela e visível apenas em @media print.
- * Mostra todas as builds da composição em grade clara, com imagens do render.albiononline.com.
+ * Prancha horizontal usada tanto na prévia quanto na exportação PNG.
+ * As imagens vêm do render.albiononline.com e o conteúdo é dimensionado para 1600px.
  */
-export function PartyPrintSheet({ party, itemIndex }: Props) {
+export function PartyPrintSheet({ party, itemIndex, captureId }: Props) {
   const printedAt = new Date().toLocaleDateString("pt-BR");
 
   return (
-    <div className="print-sheet" aria-hidden="true">
+    <div id={captureId} className="party-image-sheet">
       <header className="print-header">
         <div>
           <h1>{party.name}</h1>
@@ -41,10 +42,10 @@ export function PartyPrintSheet({ party, itemIndex }: Props) {
             <section key={m.id} className="print-card">
               <div className="print-card-head">
                 <strong>{m.name}</strong>
-                <span>
-                  {m.role}
-                  {m.regearSets > 0 && ` · ${m.regearSets} set${m.regearSets > 1 ? "s" : ""}`}
-                </span>
+                <span className="print-role">{m.role || "SEM FUNÇÃO"}</span>
+                {m.regearSets > 0 && (
+                  <small className="print-sets">{m.regearSets} set{m.regearSets > 1 ? "s" : ""}</small>
+                )}
               </div>
               <div className="print-slots">
                 {GRID.map((slot, idx) => {

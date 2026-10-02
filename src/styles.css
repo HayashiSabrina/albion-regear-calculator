@@ -148,95 +148,117 @@
   border-color: color-mix(in oklab, var(--color-primary) 60%, var(--color-border));
 }
 
-/* ===== Folha de impressão das Party Builds ===== */
-.print-sheet {
-  display: none;
+/* ===== Prancha horizontal exportada em PNG ===== */
+.party-image-stage {
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  box-shadow: var(--shadow-panel);
 }
-
-@media print {
-  body * {
-    visibility: hidden;
-  }
-  .print-sheet,
-  .print-sheet * {
-    visibility: visible;
-  }
-  .print-sheet {
-    display: block;
-    position: absolute;
-    inset: 0;
-    background: #fff;
-    color: #111;
-    padding: 12mm;
-    font-family: system-ui, sans-serif;
-  }
+.party-image-sheet {
+  --image-bg: oklch(0.18 0.012 64);
+  --image-card: oklch(0.235 0.016 64);
+  --image-card-deep: oklch(0.15 0.01 64);
+  --image-text: oklch(0.94 0.008 80);
+  --image-muted: oklch(0.71 0.018 76);
+  --image-border: oklch(0.4 0.025 72);
+  --image-gold: oklch(0.79 0.126 79);
+  width: 1600px;
+  min-height: 900px;
+  padding: 52px;
+  background: var(--image-bg);
+  color: var(--image-text);
+  font-family: var(--font-sans);
+}
   .print-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    gap: 16px;
-    border-bottom: 2px solid #c9a227;
-    padding-bottom: 8px;
-    margin-bottom: 12px;
+    gap: 32px;
+    border-bottom: 2px solid var(--image-gold);
+    padding-bottom: 18px;
+    margin-bottom: 24px;
   }
   .print-header h1 {
-    font-size: 20px;
+    font-family: var(--font-display);
+    font-size: 34px;
+    line-height: 1.1;
     margin: 0;
   }
   .print-desc {
-    font-size: 11px;
-    color: #444;
-    margin: 4px 0 0;
-    max-width: 140mm;
+    font-size: 16px;
+    color: var(--image-muted);
+    margin: 8px 0 0;
+    max-width: 950px;
   }
   .print-meta {
-    font-size: 10px;
-    color: #666;
+    font-size: 14px;
+    color: var(--image-muted);
     white-space: nowrap;
   }
   .print-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
   }
   .print-card {
-    border: 1px solid #bbb;
-    border-radius: 6px;
-    padding: 6px;
+    border: 1px solid var(--image-border);
+    border-radius: 8px;
+    padding: 12px;
+    background: var(--image-card);
     break-inside: avoid;
   }
   .print-card-head {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    font-size: 11px;
-    margin-bottom: 6px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 4px 10px;
+    margin-bottom: 12px;
   }
-  .print-card-head span {
-    color: #555;
-    font-size: 10px;
+  .print-card-head strong {
+    overflow: hidden;
+    font-size: 17px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .print-role {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    color: var(--image-gold);
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+  .print-sets {
+    grid-column: 2;
+    grid-row: 1;
+    color: var(--image-muted);
+    font-size: 13px;
+    white-space: nowrap;
   }
   .print-slots {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
+    gap: 16px 7px;
     justify-items: center;
   }
   .print-slot {
     position: relative;
     width: 100%;
     aspect-ratio: 1;
-    max-width: 64px;
-    border: 1px solid #999;
+    max-width: 76px;
+    border: 1px solid var(--image-border);
     border-radius: 6px;
-    background: #f4f4f4;
+    background: var(--image-card-deep);
     display: flex;
     align-items: center;
     justify-content: center;
   }
   .print-slot.filled {
-    border-color: #c9a227;
-    background: #fff;
+    border-color: var(--image-gold);
+    background: var(--image-card-deep);
+    box-shadow: inset 0 0 10px color-mix(in oklab, var(--image-gold) 12%, transparent);
   }
   .print-slot.blocked {
     opacity: 0.35;
@@ -248,24 +270,24 @@
   }
   .print-slot i {
     font-style: normal;
-    color: #aaa;
-    font-size: 14px;
+    color: var(--image-muted);
+    font-size: 18px;
   }
   .print-slot em {
     position: absolute;
     top: 1px;
     left: 3px;
-    font-size: 8px;
+    font-size: 10px;
     font-style: normal;
     font-weight: 700;
-    color: #7a5c00;
+    color: var(--image-gold);
   }
   .print-slot b {
     position: absolute;
     bottom: 1px;
     right: 3px;
-    font-size: 8px;
-    color: #333;
+    font-size: 10px;
+    color: var(--image-text);
   }
   .print-slot small {
     position: absolute;
@@ -273,11 +295,31 @@
     left: 0;
     right: 0;
     text-align: center;
-    font-size: 7px;
+    font-size: 9px;
     text-transform: uppercase;
-    color: #777;
+    color: var(--image-muted);
   }
   .print-slots {
-    row-gap: 18px;
+    row-gap: 20px;
+  }
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+  body {
+    margin: 0;
+  }
+  body > * {
+    visibility: hidden;
+  }
+  .party-image-sheet,
+  .party-image-sheet * {
+    visibility: visible;
+  }
+  .party-image-sheet {
+    position: absolute;
+    inset: 0;
   }
 }
