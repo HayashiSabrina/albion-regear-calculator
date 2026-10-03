@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Download, LoaderCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { PartyPrintSheet } from "@/components/party/PartyPrintSheet";
 import { Button } from "@/components/ui/button";
@@ -54,6 +54,8 @@ function PartyImagePage() {
   const [party, setParty] = useState<Party | null>(null);
   const [partyLoaded, setPartyLoaded] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [pngUrl, setPngUrl] = useState<string | null>(null);
+  const [pngError, setPngError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -69,26 +71,50 @@ function PartyImagePage() {
     };
   }, [id]);
 
-  const downloadPng = async () => {
-    if (!party) return;
+  const generatePng = useCallback(async () => {
+    if (!party) return null;
     const sheet = document.getElementById(CAPTURE_ID);
-    if (!sheet) return;
+    if (!sheet) return null;
 
     setDownloading(true);
+    setPngError(null);
     try {
       await waitForImages(sheet);
       const { toPng } = await import("html-to-image");
       const dataUrl = await toPng(sheet, {
-        cacheBust: true,
-        pixelRatio: 2,
+        cacheBust: false,
+        pixelRatio: 1.5,
         backgroundColor: "#171612",
       });
+      setPngUrl(dataUrl);
+      return dataUrl;
+    } catch {
+      setPngError("Não foi possível gerar a imagem. Tente novamente.");
+      return null;
+    } finally {
+      setDownloading(false);
+    }
+  }, [party]);
+
+  useEffect(() => {
+    if (!party || itemsLoading || pngUrl || downloading) return;
+    const frame = window.requestAnimationFrame(() => void generatePng());
+    return () => window.cancelAnimationFrame(frame);
+  }, [downloading, generatePng, itemsLoading, party, pngUrl]);
+
+  const downloadPng = async () => {
+    if (!party) return;
+    const dataUrl = pngUrl ?? await generatePng();
+    if (!dataUrl) return;
+    try {
       const link = document.createElement("a");
       link.download = `${safeFileName(party.name)}.png`;
       link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
-    } finally {
-      setDownloading(false);
+      link.remove();
+    } catch {
+      setPngError("Não foi possível baixar a imagem. Tente novamente.");
     }
   };
 
@@ -113,9 +139,16 @@ function PartyImagePage() {
       {loading ? (
         <div className="mx-auto max-w-[1600px] py-24 text-center text-muted-foreground">Carregando composição…</div>
       ) : party ? (
-        <div className="party-image-stage mx-auto max-w-[1600px] overflow-x-auto">
-          <PartyPrintSheet party={party} itemIndex={itemIndex} captureId={CAPTURE_ID} />
-        </div>
+        <>
+          {pngError && <p className="mx-auto mb-4 max-w-[1600px] text-sm text-destructive">{pngError}</p>}
+          <div className="party-image-stage mx-auto max-w-[1600px] overflow-x-auto">
+            {pngUrl ? (
+              <img src={pngUrl} alt={`Composição ${party.name}`} className="block h-auto w-[1600px] max-w-none" />
+            ) : (
+              <PartyPrintSheet party={party} itemIndex={itemIndex} captureId={CAPTURE_ID} />
+            )}
+          </div>
+        </>
       ) : (
         <div className="mx-auto max-w-[1600px] py-24 text-center text-muted-foreground">Composição não encontrada.</div>
       )}
