@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PartyRouteImport } from './routes/party'
+import { Route as PartyIndexRouteImport } from './routes/party.index'
 import { Route as PartyPrintRouteImport } from './routes/party.print'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const PartyRoute = PartyRouteImport.update({
   path: '/party',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PartyIndexRoute = PartyIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PartyRoute,
+} as any)
 const PartyPrintRoute = PartyPrintRouteImport.update({
   id: '/print',
   path: '/print',
@@ -33,24 +39,26 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/party': typeof PartyRouteWithChildren
   '/party/print': typeof PartyPrintRoute
+  '/party/': typeof PartyIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/party': typeof PartyRouteWithChildren
   '/party/print': typeof PartyPrintRoute
+  '/party': typeof PartyIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/party': typeof PartyRouteWithChildren
   '/party/print': typeof PartyPrintRoute
+  '/party/': typeof PartyIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/party' | '/party/print'
+  fullPaths: '/' | '/party' | '/party/print' | '/party/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/party' | '/party/print'
-  id: '__root__' | '/' | '/party' | '/party/print'
+  to: '/' | '/party/print' | '/party'
+  id: '__root__' | '/' | '/party' | '/party/print' | '/party/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -74,6 +82,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PartyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/party/': {
+      id: '/party/'
+      path: '/'
+      fullPath: '/party/'
+      preLoaderRoute: typeof PartyIndexRouteImport
+      parentRoute: typeof PartyRoute
+    }
     '/party/print': {
       id: '/party/print'
       path: '/print'
@@ -86,10 +101,12 @@ declare module '@tanstack/react-router' {
 
 interface PartyRouteChildren {
   PartyPrintRoute: typeof PartyPrintRoute
+  PartyIndexRoute: typeof PartyIndexRoute
 }
 
 const PartyRouteChildren: PartyRouteChildren = {
   PartyPrintRoute: PartyPrintRoute,
+  PartyIndexRoute: PartyIndexRoute,
 }
 
 const PartyRouteWithChildren = PartyRoute._addFileChildren(PartyRouteChildren)
