@@ -36,7 +36,7 @@ import {
 import { addLine, createRegear, saveRegear } from "@/lib/albion/regears";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/party")({
+export const Route = createFileRoute("/party/")({
   head: () => ({
     meta: [
       { title: "Party Builds — Composições do Albion Online" },
