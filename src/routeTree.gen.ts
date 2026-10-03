@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PartyRouteImport } from './routes/party'
 import { Route as PartyIndexRouteImport } from './routes/party.index'
 import { Route as PartyPrintRouteImport } from './routes/party.print'
 
@@ -18,19 +19,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PartyIndexRoute = PartyIndexRouteImport.update({
-  id: '/party/',
-  path: '/party/',
+const PartyRoute = PartyRouteImport.update({
+  id: '/party',
+  path: '/party',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PartyIndexRoute = PartyIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PartyRoute,
+} as any)
 const PartyPrintRoute = PartyPrintRouteImport.update({
-  id: '/party/print',
-  path: '/party/print',
-  getParentRoute: () => rootRouteImport,
+  id: '/print',
+  path: '/print',
+  getParentRoute: () => PartyRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/party': typeof PartyRouteWithChildren
   '/party/print': typeof PartyPrintRoute
   '/party/': typeof PartyIndexRoute
 }
@@ -42,21 +49,21 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/party': typeof PartyRouteWithChildren
   '/party/print': typeof PartyPrintRoute
   '/party/': typeof PartyIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/party/print' | '/party/'
+  fullPaths: '/' | '/party' | '/party/print' | '/party/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/party/print' | '/party'
-  id: '__root__' | '/' | '/party/print' | '/party/'
+  id: '__root__' | '/' | '/party' | '/party/print' | '/party/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  PartyPrintRoute: typeof PartyPrintRoute
-  PartyIndexRoute: typeof PartyIndexRoute
+  PartyRoute: typeof PartyRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -68,27 +75,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/party': {
+      id: '/party'
+      path: '/party'
+      fullPath: '/party'
+      preLoaderRoute: typeof PartyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/party/': {
       id: '/party/'
-      path: '/party'
+      path: '/'
       fullPath: '/party/'
       preLoaderRoute: typeof PartyIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PartyRoute
     }
     '/party/print': {
       id: '/party/print'
-      path: '/party/print'
+      path: '/print'
       fullPath: '/party/print'
       preLoaderRoute: typeof PartyPrintRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PartyRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+interface PartyRouteChildren {
+  PartyPrintRoute: typeof PartyPrintRoute
+  PartyIndexRoute: typeof PartyIndexRoute
+}
+
+const PartyRouteChildren: PartyRouteChildren = {
   PartyPrintRoute: PartyPrintRoute,
   PartyIndexRoute: PartyIndexRoute,
+}
+
+const PartyRouteWithChildren = PartyRoute._addFileChildren(PartyRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  PartyRoute: PartyRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
