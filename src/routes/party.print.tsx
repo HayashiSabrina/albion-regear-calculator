@@ -11,7 +11,7 @@ const CAPTURE_ID = "party-builds-image";
 
 export const Route = createFileRoute("/party/print")({
   validateSearch: (search: Record<string, unknown>) => ({
-    id: typeof search.id === "string" ? search.id : "",
+    id: typeof search["id"] === "string" ? search["id"] : "",
   }),
   head: () => ({
     meta: [
