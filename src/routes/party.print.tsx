@@ -56,6 +56,7 @@ function PartyImagePage() {
   const [downloading, setDownloading] = useState(false);
   const [pngUrl, setPngUrl] = useState<string | null>(null);
   const [pngError, setPngError] = useState<string | null>(null);
+  const [autoGenerateAttempted, setAutoGenerateAttempted] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -97,10 +98,11 @@ function PartyImagePage() {
   }, [party]);
 
   useEffect(() => {
-    if (!party || itemsLoading || pngUrl || downloading) return;
+    if (!party || itemsLoading || pngUrl || downloading || autoGenerateAttempted) return;
+    setAutoGenerateAttempted(true);
     const frame = window.requestAnimationFrame(() => void generatePng());
     return () => window.cancelAnimationFrame(frame);
-  }, [downloading, generatePng, itemsLoading, party, pngUrl]);
+  }, [autoGenerateAttempted, downloading, generatePng, itemsLoading, party, pngUrl]);
 
   const downloadPng = async () => {
     if (!party) return;
