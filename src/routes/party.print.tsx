@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { PartyPrintSheet } from "@/components/party/PartyPrintSheet";
 import { Button } from "@/components/ui/button";
 import { useAlbionData } from "@/hooks/useAlbionData";
-import { listParties, type Party } from "@/lib/albion/parties";
+import { getParty, readStagedPartyExport, type Party } from "@/lib/albion/parties";
 
 const CAPTURE_ID = "party-builds-image";
 
@@ -60,9 +60,19 @@ function PartyImagePage() {
 
   useEffect(() => {
     let active = true;
-    listParties()
-      .then((parties) => {
-        if (active) setParty(parties.find((entry) => entry.id === id) ?? null);
+    if (!id) {
+      setPartyLoaded(true);
+      return () => {
+        active = false;
+      };
+    }
+
+    getParty(id)
+      .then((storedParty) => {
+        if (active) setParty(storedParty ?? readStagedPartyExport(id));
+      })
+      .catch(() => {
+        if (active) setParty(readStagedPartyExport(id));
       })
       .finally(() => {
         if (active) setPartyLoaded(true);

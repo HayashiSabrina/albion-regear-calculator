@@ -1,7 +1,7 @@
 // Party Builds — composições de party persistidas localmente (IndexedDB).
 // A "Build" (itens por set) é separada do "Regear" (quantos sets).
 
-import { STORE_PARTIES, idbDelete, idbGetAll, idbPut } from "./idb";
+import { STORE_PARTIES, idbDelete, idbGet, idbGetAll, idbPut } from "./idb";
 import type { EquipmentItem } from "./types";
 
 export type GearSlot =
@@ -67,6 +67,36 @@ export const isTwoHanded = (itemId: string | undefined) => !!itemId && itemId.in
 export async function listParties(): Promise<Party[]> {
   const all = await idbGetAll<Party>(STORE_PARTIES);
   return all.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+}
+
+/** Busca direta usada pela página de exportação, sem depender da ordenação da lista. */
+export const getParty = (id: string) => idbGet<Party>(STORE_PARTIES, id);
+
+const exportCacheKey = (id: string) => `albion-party-export:${id}`;
+
+/**
+ * Entrega síncrona entre a tela de edição e a nova aba. O IndexedDB continua
+ * sendo a fonte principal; esta cópia evita uma corrida caso ainda haja uma gravação pendente.
+ */
+export function stagePartyExport(party: Party) {
+  try {
+    window.localStorage.setItem(exportCacheKey(party.id), JSON.stringify(party));
+  } catch {
+    // A exportação ainda tentará ler a composição persistida no IndexedDB.
+  }
+}
+
+export function readStagedPartyExport(id: string): Party | null {
+  try {
+    const value = window.localStorage.getItem(exportCacheKey(id));
+    if (!value) return null;
+    const parsed = JSON.parse(value) as Partial<Party>;
+    return parsed.id === id && typeof parsed.name === "string" && Array.isArray(parsed.members)
+      ? (parsed as Party)
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function saveParty(party: Party): Promise<Party> {
