@@ -30,10 +30,10 @@ import {
   consolidatePartyItems,
   newMember,
   setMemberItem,
-  stagePartyExport,
   type GearSlot,
   type PartyMember,
 } from "@/lib/albion/parties";
+import { partyPrintUrl } from "@/lib/albion/partyShare";
 import { addLine, createRegear, saveRegear } from "@/lib/albion/regears";
 import { cn } from "@/lib/utils";
 
@@ -193,8 +193,7 @@ function PartyPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        stagePartyExport(active);
-                        window.open(`/party/print?id=${encodeURIComponent(active.id)}`, "_blank", "noopener,noreferrer");
+                        window.open(partyPrintUrl(active), "_blank", "noopener,noreferrer");
                       }}
                     >
                       <ImageDown /> Abrir PNG

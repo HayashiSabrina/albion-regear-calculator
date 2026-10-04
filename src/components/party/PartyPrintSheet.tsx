@@ -1,4 +1,4 @@
-import { SLOT_LABELS, itemIconUrl, itemTierLabel } from "@/lib/albion/format";
+import { SLOT_LABELS, itemTierLabel } from "@/lib/albion/format";
 import { isTwoHanded, type GearSlot, type Party } from "@/lib/albion/parties";
 import type { EquipmentItem } from "@/lib/albion/types";
 
@@ -57,7 +57,11 @@ export function PartyPrintSheet({ party, itemIndex, captureId }: Props) {
                     <div key={slot} className={`print-slot${entry ? " filled" : ""}${blocked ? " blocked" : ""}`}>
                       {entry ? (
                         <>
-                          <img src={itemIconUrl(entry.itemId)} alt={item?.name ?? entry.itemId} />
+                          <img
+                            src={`/api/public/item-icon/${encodeURIComponent(entry.itemId)}`}
+                            crossOrigin="anonymous"
+                            alt={item?.name ?? entry.itemId}
+                          />
                           {item && <em>{itemTierLabel(item)}</em>}
                           {entry.quantityPerSet > 1 && <b>×{entry.quantityPerSet}</b>}
                         </>

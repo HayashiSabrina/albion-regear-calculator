@@ -5,7 +5,8 @@ import { useCallback, useEffect, useState } from "react";
 import { PartyPrintSheet } from "@/components/party/PartyPrintSheet";
 import { Button } from "@/components/ui/button";
 import { useAlbionData } from "@/hooks/useAlbionData";
-import { getParty, readStagedPartyExport, type Party } from "@/lib/albion/parties";
+import { getParty, type Party } from "@/lib/albion/parties";
+import { readPartyFromHash } from "@/lib/albion/partyShare";
 
 const CAPTURE_ID = "party-builds-image";
 
@@ -60,23 +61,14 @@ function PartyImagePage() {
 
   useEffect(() => {
     let active = true;
-    if (!id) {
+    const finish = (stored: Party | undefined | null) => {
+      if (!active) return;
+      // 1º IndexedDB; fallback final: composição serializada no hash da URL.
+      setParty(stored ?? readPartyFromHash());
       setPartyLoaded(true);
-      return () => {
-        active = false;
-      };
-    }
-
-    getParty(id)
-      .then((storedParty) => {
-        if (active) setParty(storedParty ?? readStagedPartyExport(id));
-      })
-      .catch(() => {
-        if (active) setParty(readStagedPartyExport(id));
-      })
-      .finally(() => {
-        if (active) setPartyLoaded(true);
-      });
+    };
+    if (!id) finish(null);
+    else getParty(id).then(finish, () => finish(null));
     return () => {
       active = false;
     };

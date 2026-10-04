@@ -72,32 +72,6 @@ export async function listParties(): Promise<Party[]> {
 /** Busca direta usada pela página de exportação, sem depender da ordenação da lista. */
 export const getParty = (id: string) => idbGet<Party>(STORE_PARTIES, id);
 
-const exportCacheKey = (id: string) => `albion-party-export:${id}`;
-
-/**
- * Entrega síncrona entre a tela de edição e a nova aba. O IndexedDB continua
- * sendo a fonte principal; esta cópia evita uma corrida caso ainda haja uma gravação pendente.
- */
-export function stagePartyExport(party: Party) {
-  try {
-    window.localStorage.setItem(exportCacheKey(party.id), JSON.stringify(party));
-  } catch {
-    // A exportação ainda tentará ler a composição persistida no IndexedDB.
-  }
-}
-
-export function readStagedPartyExport(id: string): Party | null {
-  try {
-    const value = window.localStorage.getItem(exportCacheKey(id));
-    if (!value) return null;
-    const parsed = JSON.parse(value) as Partial<Party>;
-    return parsed.id === id && typeof parsed.name === "string" && Array.isArray(parsed.members)
-      ? (parsed as Party)
-      : null;
-  } catch {
-    return null;
-  }
-}
 
 export async function saveParty(party: Party): Promise<Party> {
   const next = { ...party, updatedAt: new Date().toISOString() };
