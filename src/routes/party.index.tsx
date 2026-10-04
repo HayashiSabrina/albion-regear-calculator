@@ -30,6 +30,7 @@ import {
   consolidatePartyItems,
   newMember,
   setMemberItem,
+  stagePartyExport,
   type GearSlot,
   type PartyMember,
 } from "@/lib/albion/parties";
@@ -191,7 +192,10 @@ function PartyPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open(`/party/print?id=${encodeURIComponent(active.id)}`, "_blank", "noopener,noreferrer")}
+                      onClick={() => {
+                        stagePartyExport(active);
+                        window.open(`/party/print?id=${encodeURIComponent(active.id)}`, "_blank", "noopener,noreferrer");
+                      }}
                     >
                       <ImageDown /> Abrir PNG
                     </Button>
