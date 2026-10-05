@@ -11,4 +11,5 @@
 
 ## Project architecture
 
-- Keep Party Build image export on `/party/print`, reading the selected composition from IndexedDB so the editor stays separate from the capture canvas.
+- Keep Party Build image export on `/party/print`: read the composition from IndexedDB first, then fall back to the compact copy in the URL hash (`#data=`), because new tabs from iframed previews may not share storage.
+- Load item icons in exported sheets through the same-origin `/api/public/item-icon/$id` proxy, because render.albiononline.com sends no CORS headers and would break PNG capture.
