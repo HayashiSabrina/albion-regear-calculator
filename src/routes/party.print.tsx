@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Download, LoaderCircle } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { PartyPrintSheet } from "@/components/party/PartyPrintSheet";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ function PartyImagePage() {
   const [downloading, setDownloading] = useState(false);
   const [pngUrl, setPngUrl] = useState<string | null>(null);
   const [pngError, setPngError] = useState<string | null>(null);
-  const [autoGenerateAttempted, setAutoGenerateAttempted] = useState(false);
+  const autoGenerateRef = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -99,12 +99,12 @@ function PartyImagePage() {
     }
   }, [party]);
 
+  // Geração automática única. O ref evita que a re-renderização cancele o frame agendado.
   useEffect(() => {
-    if (!party || itemsLoading || pngUrl || downloading || autoGenerateAttempted) return;
-    setAutoGenerateAttempted(true);
-    const frame = window.requestAnimationFrame(() => void generatePng());
-    return () => window.cancelAnimationFrame(frame);
-  }, [autoGenerateAttempted, downloading, generatePng, itemsLoading, party, pngUrl]);
+    if (!party || itemsLoading || autoGenerateRef.current) return;
+    autoGenerateRef.current = true;
+    window.requestAnimationFrame(() => void generatePng());
+  }, [generatePng, itemsLoading, party]);
 
   const downloadPng = async () => {
     if (!party) return;
