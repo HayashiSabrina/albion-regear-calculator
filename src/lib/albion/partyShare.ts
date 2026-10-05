@@ -58,9 +58,12 @@ export function decodePartyFromUrl(value: string): Party | null {
         name: String(mName),
         role: String(role ?? ""),
         regearSets: Number(sets) || 0,
-        items: (Array.isArray(items) ? items : [])
-          .filter(([slot, itemId]) => SLOTS[slot] && typeof itemId === "string")
-          .map(([slot, itemId, qty]) => ({ slot: SLOTS[slot], itemId, quantityPerSet: Number(qty) || 1 })),
+        items: (Array.isArray(items) ? items : []).flatMap(([slotIdx, itemId, qty]) => {
+          const slot = SLOTS[slotIdx];
+          return slot && typeof itemId === "string"
+            ? [{ slot, itemId, quantityPerSet: Number(qty) || 1 }]
+            : [];
+        }),
       })),
     };
   } catch {
@@ -70,7 +73,7 @@ export function decodePartyFromUrl(value: string): Party | null {
 
 export function readPartyFromHash(): Party | null {
   const match = /(?:^#|&)data=([^&]+)/.exec(window.location.hash);
-  return match ? decodePartyFromUrl(match[1]) : null;
+  return match?.[1] ? decodePartyFromUrl(match[1]) : null;
 }
 
 export const partyPrintUrl = (party: Party) =>
