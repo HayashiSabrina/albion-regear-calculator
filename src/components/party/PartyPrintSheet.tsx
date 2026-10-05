@@ -1,6 +1,7 @@
 import { SLOT_LABELS, itemTierLabel } from "@/lib/albion/format";
 import { isTwoHanded, type GearSlot, type Party } from "@/lib/albion/parties";
 import type { EquipmentItem } from "@/lib/albion/types";
+import morsLogo from "@/assets/mors-logo.png.asset.json";
 
 const GRID: (GearSlot | null)[] = [
   "bag", "head", "cape",
@@ -24,10 +25,14 @@ export function PartyPrintSheet({ party, itemIndex, captureId }: Props) {
 
   return (
     <div id={captureId} className="party-image-sheet">
+      <img className="print-watermark" src={morsLogo.url} crossOrigin="anonymous" alt="" />
       <header className="print-header">
-        <div>
+        <div className="print-title-group">
+          <img className="print-brand-logo" src={morsLogo.url} crossOrigin="anonymous" alt="MORS" />
+          <div>
           <h1>{party.name}</h1>
           {party.description && <p className="print-desc">{party.description}</p>}
+          </div>
         </div>
         <p className="print-meta">
           {party.members.length} players · impresso em {printedAt}

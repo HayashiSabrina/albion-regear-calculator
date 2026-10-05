@@ -58,44 +58,44 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --shadow-panel: 0 1px 0 0 oklch(1 0 0 / 6%) inset, 0 18px 40px -24px oklch(0 0 0 / 70%);
+  --shadow-panel: 0 1px 0 0 oklch(0.78 0.1 79 / 10%) inset, 0 18px 40px -24px oklch(0 0 0 / 90%);
 }
 
 /* Tema único, escuro (dark mode por padrão). */
 :root,
 .dark {
   --radius: 0.5rem;
-  --background: oklch(0.16 0.012 64);
-  --foreground: oklch(0.94 0.008 80);
-  --surface: oklch(0.2 0.014 64);
-  --surface-foreground: oklch(0.94 0.008 80);
-  --card: oklch(0.204 0.014 64);
-  --card-foreground: oklch(0.94 0.008 80);
-  --popover: oklch(0.204 0.014 64);
-  --popover-foreground: oklch(0.94 0.008 80);
-  --primary: oklch(0.79 0.126 79);
-  --primary-foreground: oklch(0.18 0.02 64);
-  --gold: oklch(0.82 0.13 80);
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.79 0.08 80);
+  --surface: oklch(0.105 0.012 75);
+  --surface-foreground: oklch(0.84 0.06 80);
+  --card: oklch(0.12 0.014 74);
+  --card-foreground: oklch(0.84 0.06 80);
+  --popover: oklch(0.105 0.012 75);
+  --popover-foreground: oklch(0.84 0.06 80);
+  --primary: oklch(0.78 0.09 79);
+  --primary-foreground: oklch(0.08 0.01 75);
+  --gold: oklch(0.78 0.09 79);
   --artifact: oklch(0.72 0.14 300);
-  --secondary: oklch(0.26 0.015 64);
-  --secondary-foreground: oklch(0.93 0.008 80);
-  --muted: oklch(0.24 0.013 64);
-  --muted-foreground: oklch(0.7 0.017 76);
-  --accent: oklch(0.29 0.02 66);
-  --accent-foreground: oklch(0.95 0.01 80);
+  --secondary: oklch(0.19 0.025 76);
+  --secondary-foreground: oklch(0.84 0.06 80);
+  --muted: oklch(0.16 0.018 75);
+  --muted-foreground: oklch(0.7 0.065 82);
+  --accent: oklch(0.24 0.045 76);
+  --accent-foreground: oklch(0.88 0.055 82);
   --destructive: oklch(0.58 0.19 25);
   --destructive-foreground: oklch(0.97 0.01 80);
-  --border: oklch(0.31 0.016 66);
-  --input: oklch(0.31 0.016 66);
-  --ring: oklch(0.79 0.126 79);
-  --sidebar: oklch(0.18 0.013 64);
-  --sidebar-foreground: oklch(0.92 0.008 80);
-  --sidebar-primary: oklch(0.79 0.126 79);
-  --sidebar-primary-foreground: oklch(0.18 0.02 64);
-  --sidebar-accent: oklch(0.26 0.016 66);
-  --sidebar-accent-foreground: oklch(0.95 0.01 80);
-  --sidebar-border: oklch(0.29 0.015 66);
-  --sidebar-ring: oklch(0.79 0.126 79);
+  --border: oklch(0.48 0.07 76);
+  --input: oklch(0.38 0.055 76);
+  --ring: oklch(0.78 0.09 79);
+  --sidebar: oklch(0.075 0.008 75);
+  --sidebar-foreground: oklch(0.84 0.06 80);
+  --sidebar-primary: oklch(0.78 0.09 79);
+  --sidebar-primary-foreground: oklch(0.08 0.01 75);
+  --sidebar-accent: oklch(0.2 0.035 76);
+  --sidebar-accent-foreground: oklch(0.88 0.055 82);
+  --sidebar-border: oklch(0.42 0.065 76);
+  --sidebar-ring: oklch(0.78 0.09 79);
 }
 
 @layer base {
@@ -123,6 +123,22 @@
   border: 1px solid var(--color-border);
   background-color: var(--color-surface);
   box-shadow: var(--shadow-panel);
+}
+
+.brand-header {
+  display: flex;
+  min-height: 82px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid color-mix(in oklab, var(--color-primary) 42%, transparent);
+  padding: 2px 8px 12px;
+}
+.brand-logo {
+  display: block;
+  width: min(100%, 238px);
+  height: auto;
+  object-fit: contain;
 }
 
 @utility num {
@@ -155,13 +171,15 @@
   box-shadow: var(--shadow-panel);
 }
 .party-image-sheet {
-  --image-bg: oklch(0.18 0.012 64);
-  --image-card: oklch(0.235 0.016 64);
-  --image-card-deep: oklch(0.15 0.01 64);
-  --image-text: oklch(0.94 0.008 80);
-  --image-muted: oklch(0.71 0.018 76);
-  --image-border: oklch(0.4 0.025 72);
-  --image-gold: oklch(0.79 0.126 79);
+  --image-bg: oklch(0 0 0);
+  --image-card: oklch(0.12 0.014 74);
+  --image-card-deep: oklch(0.065 0.008 75);
+  --image-text: oklch(0.84 0.06 80);
+  --image-muted: oklch(0.7 0.065 82);
+  --image-border: oklch(0.48 0.07 76);
+  --image-gold: oklch(0.78 0.09 79);
+  position: relative;
+  isolation: isolate;
   width: 1600px;
   min-height: 900px;
   padding: 52px;
@@ -169,6 +187,27 @@
   color: var(--image-text);
   font-family: var(--font-sans);
 }
+  .print-watermark {
+    position: absolute;
+    z-index: -1;
+    right: 70px;
+    bottom: 42px;
+    width: 620px;
+    opacity: 0.08;
+    pointer-events: none;
+  }
+  .print-title-group {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 22px;
+  }
+  .print-brand-logo {
+    width: 210px;
+    height: 76px;
+    object-fit: contain;
+    flex: none;
+  }
   .print-header {
     display: flex;
     justify-content: space-between;

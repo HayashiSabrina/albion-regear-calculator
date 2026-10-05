@@ -1,9 +1,10 @@
-import { Plus, Star, Swords } from "lucide-react";
+import { Plus, Star } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AppNav } from "@/components/AppNav";
+import { BrandHeader } from "@/components/BrandHeader";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/albion/format";
 import type { Regear } from "@/lib/albion/types";
@@ -35,13 +36,7 @@ export function RegearSidebar({
 
   return (
     <aside className="panel flex h-fit flex-col gap-4 p-4 lg:sticky lg:top-4">
-      <div className="flex items-center gap-2">
-        <Swords className="size-5 text-primary" />
-        <div>
-          <p className="font-display text-sm font-bold tracking-wide">REGEAR FORGE</p>
-          <p className="text-[11px] text-muted-foreground">Albion Online</p>
-        </div>
-      </div>
+      <BrandHeader />
 
       <AppNav />
 
