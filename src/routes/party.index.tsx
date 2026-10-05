@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Copy, ImageDown, Pencil, Plus, Save, Trash2, Users } from "lucide-react";
+import { Copy, ImageDown, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { AppNav } from "@/components/AppNav";
+import { BrandHeader } from "@/components/BrandHeader";
 import { MemberCard } from "@/components/party/MemberCard";
 import { RegearSummary } from "@/components/party/RegearSummary";
 import { SlotItemPicker } from "@/components/party/SlotItemPicker";
@@ -102,13 +103,7 @@ function PartyPage() {
     <main className="min-h-screen bg-background">
       <div className="mx-auto grid max-w-[1680px] gap-4 p-3 sm:p-4 lg:grid-cols-[280px_minmax(0,1fr)]">
         <aside className="panel flex h-fit flex-col gap-4 p-4 lg:sticky lg:top-4">
-          <div className="flex items-center gap-2">
-            <Users className="size-5 text-primary" />
-            <div>
-              <p className="font-display text-sm font-bold tracking-wide">PARTY BUILDS</p>
-              <p className="text-[11px] text-muted-foreground">Albion Online</p>
-            </div>
-          </div>
+          <BrandHeader />
           <AppNav />
           <div className="flex gap-2">
             <Input

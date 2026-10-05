@@ -84,10 +84,11 @@ function PartyImagePage() {
     try {
       await waitForImages(sheet);
       const { toPng } = await import("html-to-image");
+      const backgroundColor = window.getComputedStyle(sheet).backgroundColor;
       const dataUrl = await toPng(sheet, {
         cacheBust: false,
         pixelRatio: 1.5,
-        backgroundColor: "#171612",
+        backgroundColor,
       });
       setPngUrl(dataUrl);
       return dataUrl;
